@@ -4,26 +4,42 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] private float moveSpeed = 5f;
+    [Header("Movement Settings")]
+    [SerializeField] private float walkSpeed = 5f;
+    [SerializeField] private float sprintSpeed = 8f;
+    [SerializeField] private bool normalizeMovement = true;
 
-    private Rigidbody2D rb;
-    private Vector2 movement;
+    private Vector2 moveDirection;
+    private float currentSpeed;
 
-    private void Start()
+    void Update()
     {
-        rb = GetComponent<Rigidbody2D>();
+        HandleInput();
+        Move();
     }
 
-    private void Update()
+    private void HandleInput()
     {
-        movement.x = Input.GetAxisRaw("Horizontal");
-        movement.y = Input.GetAxisRaw("Vertical");
+        // Get movement input
+        float moveX = Input.GetAxisRaw("Horizontal");
+        float moveY = Input.GetAxisRaw("Vertical");
 
-        movement = movement.normalized;
+        // Calculate movement direction
+        moveDirection = new Vector2(moveX, moveY);
+
+        // Normalize movement if enabled (prevents faster diagonal movement)
+        if (normalizeMovement && moveDirection.magnitude > 1f)
+        {
+            moveDirection.Normalize();
+        }
+
+        // Handle sprint
+        currentSpeed = Input.GetKey(KeyCode.LeftShift) ? sprintSpeed : walkSpeed;
     }
 
-    private void FixedUpdate()
+    private void Move()
     {
-        rb.MovePosition(rb.position + movement * (moveSpeed * Time.fixedDeltaTime));
-    }   
+        // Apply movement using Transform
+        transform.position += new Vector3(moveDirection.x, moveDirection.y, 0) * (currentSpeed * Time.deltaTime);
+    }
 }
