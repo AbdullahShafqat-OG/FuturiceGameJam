@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.VFX;
 
 public class Leafblower : MonoBehaviour
 {
@@ -8,6 +9,8 @@ public class Leafblower : MonoBehaviour
     [SerializeField] private float rotationOffset = 0f; // Useful for adjusting the default angle
     [SerializeField] private bool flipSprite = true; // If your sprite needs to flip when aiming left
     [SerializeField] private SpriteRenderer spriteRenderer; // Reference to the sprite renderer if using flip
+
+    [SerializeField] private VisualEffect _fog;
 
     private Camera mainCamera;
 
@@ -25,6 +28,11 @@ public class Leafblower : MonoBehaviour
     private void Update()
     {
         RotateTowardsMouse();
+
+        _fog.SetVector3("BlowerPosition", transform.position);
+        Vector3 rot = transform.rotation.eulerAngles;
+        rot.z -= 90.0f;
+        _fog.SetVector3("BlowerRotation", rot);
     }
 
     private void RotateTowardsMouse()

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.VFX;
 
 public class PlayerController : MonoBehaviour
 {
@@ -9,13 +10,28 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float sprintSpeed = 8f;
     [SerializeField] private bool normalizeMovement = true;
 
+    [SerializeField] private VisualEffect _fog;
+    [SerializeField] private VisualEffectAsset _fogAsset;
+
     private Vector2 moveDirection;
     private float currentSpeed;
+
+    private void Start()
+    {
+        List<VFXExposedProperty> temp = new List<VFXExposedProperty>();
+        _fogAsset.GetExposedProperties(temp);
+        foreach (var item in temp)
+        {
+            Debug.Log(item.name);
+        }
+    }
 
     void Update()
     {
         HandleInput();
         Move();
+
+        _fog.SetVector3("PlayerPosition", transform.position);
     }
 
     private void HandleInput()
